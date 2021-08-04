@@ -97,6 +97,7 @@ class _AdsSettingsState extends State<AdsSettings> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Ads Settings",
       home: Scaffold(
         appBar: AppBar(
             centerTitle: false,

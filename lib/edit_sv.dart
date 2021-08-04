@@ -122,6 +122,7 @@ class _EditSvState extends State<EditSv> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Edit Video",
         home: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(

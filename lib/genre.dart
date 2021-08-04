@@ -65,6 +65,7 @@ class _GenreState extends State<Genre> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Genres",
       home: Scaffold(
         key: _scaffoldKey,
 

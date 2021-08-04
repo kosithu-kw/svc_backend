@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +8,8 @@ import 'package:movie_backend/genre.dart';
 import 'package:movie_backend/new_genre.dart';
 import 'package:movie_backend/new_sv.dart';
 import 'package:movie_backend/videos.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 void main(){
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,14 +21,227 @@ void main(){
   );
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
   @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+
+  _checkSignin(){
+    FirebaseAuth.instance
+        .authStateChanges()
+        .listen((User? user) {
+      if (user == null) {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Auth()));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    Timer(
+      Duration(seconds: 2),(){
+        _checkSignin();
+    }
+    );
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Home();
+    return MaterialApp(
+      title: "SVM",
+      home: Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
   }
 }
+
+
+
+class Auth extends StatefulWidget {
+  const Auth({Key? key}) : super(key: key);
+
+  @override
+  _AuthState createState() => _AuthState();
+}
+
+class _AuthState extends State<Auth> {
+
+  var _formKey=GlobalKey<FormState>();
+
+  String email="";
+  var emailController=TextEditingController();
+  String password="";
+  var passwordController=TextEditingController();
+
+  bool _obsecureText=true;
+
+  String err="";
+
+  bool _isLogin=false;
+  bool _isLoading=false;
+
+
+
+
+  doSignin()async{
+    setState(() {
+      _isLogin=true;
+    });
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password
+      );
+      if(userCredential!=null){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
+        setState(() {
+          _isLogin=false;
+        });
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        setState(() {
+          _isLogin=false;
+          err="No user found for that email.";
+        });
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        setState(() {
+          _isLogin=false;
+          err="Wrong password provided for that user.";
+        });
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Authentication",
+      home: Scaffold(
+        body: Center(
+        child: Container(
+          padding: EdgeInsets.all(50),
+          width: 600,
+          child: Form(
+            key: _formKey,
+          child: Column(
+            children: [
+
+              Container(
+                child: Text("Sign In to SVM", style: TextStyle(color: Colors.blueAccent, fontSize: 30, fontWeight: FontWeight.bold),),
+              ),
+              SizedBox(height: 60,),
+              Container(
+                child: Text(err, style: TextStyle(color: Colors.red),),
+              ),
+              SizedBox(height: 20,),
+              Container(
+                child: TextFormField(
+                  controller: emailController,
+                  onChanged: (v){
+                    setState(() {
+                      email=v;
+                    });
+                  },
+                  decoration: InputDecoration(
+                      hintText: "E-Mail"
+                  ),
+                  validator: (v){
+
+                    if(v==null || v.isEmpty){
+                      return "Email is input required.";
+                    }
+                    return null;
+
+                  },
+                ),
+              ),
+              SizedBox(height: 20,),
+              Container(
+                child: TextFormField(
+                  controller: passwordController,
+                  onChanged: (v){
+                    setState(() {
+                      password=v;
+                    });
+                  },
+                  obscureText: _obsecureText,
+                  decoration: InputDecoration(
+                      hintText: "Password",
+                    suffixIcon: IconButton(
+                      icon: Icon( _obsecureText ? Icons.remove_red_eye : Icons.remove_red_eye_outlined),
+                      onPressed: (){
+                        setState(() {
+                          _obsecureText=!_obsecureText;
+                        });
+                      },
+                    )
+
+                  ),
+                  validator: (v){
+
+                    if(v==null || v.isEmpty){
+                      return "Password is input required.";
+                    }
+                    return null;
+
+                  },
+                ),
+              ),
+              SizedBox(height: 20,),
+              Row(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                        child: SizedBox(
+                          width: 100,
+                          height: 50,
+                          child: ElevatedButton(
+                            child: Text("Signin"),
+                            onPressed: ()async{
+                              if(_formKey.currentState!.validate()){
+                                doSignin();
+                              }
+                            },
+                          ),
+                        )
+                    ),
+                  ),
+                  SizedBox(width: 50,),
+                  if(_isLogin) CircularProgressIndicator(),
+                ],
+              )
+            ],
+          ),
+        ),
+        )
+      ),
+      )
+    );
+  }
+}
+
+
 
 
 class Home extends StatefulWidget {
@@ -38,6 +255,17 @@ class _HomeState extends State<Home> {
   final String _title="Short Video Myanmar";
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth _auth=FirebaseAuth.instance;
+
+  String userEmail="";
+
+  _getAuth(){
+    var u=_auth.currentUser;
+   setState(() {
+     userEmail=u.email;
+   });
+
+  }
 
    int _videos=0;
    int _genres=0;
@@ -61,6 +289,7 @@ class _HomeState extends State<Home> {
 
    @override
   void initState() {
+     _getAuth();
      _getMovies();
      _getGenres();
     // TODO: implement initState
@@ -86,7 +315,7 @@ class _HomeState extends State<Home> {
                     child: Icon(Icons.video_collection_outlined),
                   ),
                   accountName: Text("SVM"),
-                  accountEmail: Text("Short Video Myanmar")
+                  accountEmail: Text(userEmail)
               ),
               ListTile(
                 onTap: (){
@@ -124,6 +353,16 @@ class _HomeState extends State<Home> {
                 },
                 title: Text("Genres"),
                 leading: Icon(Icons.line_style_outlined),
+              ),
+              ListTile(
+                onTap: (){
+                  _auth.signOut().then((value){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> Auth()));
+                  });
+
+                },
+                title: Text("Logout"),
+                leading: Icon(Icons.logout),
               ),
             ],
 

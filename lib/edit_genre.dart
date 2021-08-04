@@ -87,6 +87,7 @@ class _EditGenreState extends State<EditGenre> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Edit Genre",
         home: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(

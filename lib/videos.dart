@@ -67,6 +67,7 @@ class _VideosState extends State<Videos> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Videos",
       home: Scaffold(
         key: _scaffoldKey,
 

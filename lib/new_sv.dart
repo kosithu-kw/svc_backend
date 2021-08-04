@@ -128,6 +128,7 @@ class _AddSvState extends State<AddSv> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Add Video",
         home: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
