@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'main.dart';
+
 
 class PlayVideo extends StatefulWidget {
   final data;
@@ -41,12 +43,34 @@ class _PlayVideoState extends State<PlayVideo> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Player",
       home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: (){
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back),
+          ),
+          centerTitle: false,
+          title: Text(widget.data['title']),
+          actions: <Widget>[
+            IconButton(
+
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=> App()));
+              },
+            )
+          ],
+
+        ),
         body: SingleChildScrollView(
           child: Center(
 
             child: Container(
+              width: 1000,
+              margin: EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.all(20),
               child: AspectRatio(
                 aspectRatio: _controller.value.aspectRatio,
                 child: Stack(
@@ -142,3 +166,4 @@ class _ControlsOverlay extends StatelessWidget {
     );
   }
 }
+
