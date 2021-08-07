@@ -79,6 +79,7 @@ class _AddSvState extends State<AddSv> {
               "video_url" :_videoUrl,
               "poster_url" :_posterUrl,
               "created_at" : now,
+              "favorites": []
             }
             )
             .then((value){

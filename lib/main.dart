@@ -44,11 +44,9 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    Timer(
-      Duration(seconds: 2),(){
-        _checkSignin();
-    }
-    );
+
+   _checkSignin();
+
     // TODO: implement initState
     super.initState();
   }
@@ -56,7 +54,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "SVM",
+      title: "S V C",
       home: Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -147,7 +145,7 @@ class _AuthState extends State<Auth> {
             children: [
 
               Container(
-                child: Text("Sign In to SVM", style: TextStyle(color: Colors.blueAccent, fontSize: 30, fontWeight: FontWeight.bold),),
+                child: Text("Sign In to S V C Dashboard", style: TextStyle(color: Colors.blueAccent, fontSize: 30, fontWeight: FontWeight.bold),),
               ),
               SizedBox(height: 60,),
               Container(
@@ -252,7 +250,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final String _title="Short Video Myanmar";
+  final String _title="S V C Dashboard";
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth _auth=FirebaseAuth.instance;
@@ -314,7 +312,7 @@ class _HomeState extends State<Home> {
                   currentAccountPicture: CircleAvatar(
                     child: Icon(Icons.video_collection_outlined),
                   ),
-                  accountName: Text("SVM"),
+                  accountName: Text("S V C"),
                   accountEmail: Text(userEmail)
               ),
               ListTile(

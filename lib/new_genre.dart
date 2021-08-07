@@ -63,6 +63,7 @@ class _AddGenreState extends State<AddGenre> {
 
   var _titleController=TextEditingController();
   String _gTitle="";
+  DateTime now = DateTime.now();
 
    saveGenre()async{
       _loadingSnackBar();
@@ -72,7 +73,7 @@ class _AddGenreState extends State<AddGenre> {
             if(value.docs.length>0){
               _errorSnackBar();
             }else{
-              firestore.collection("Genre").add({"title": _gTitle})
+              firestore.collection("Genre").add({"title": _gTitle, "created_at": now})
                   .then((value){
                 _finishSnackBar();
                 _titleController.clear();
