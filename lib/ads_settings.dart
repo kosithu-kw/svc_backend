@@ -43,15 +43,47 @@ class _AdsSettingsState extends State<AdsSettings> {
     var r=await firestore.collection("Ads").get();
     var Id=r.docs.first.id;
 
+    bool show_b_home=false;
+    bool show_b_genre=false;
+    bool show_b_videos=false;
+    bool show_b_favorites=false;
+    bool show_i_download=false;
+    bool show_i_nav=false;
+
+    setState(() {
+
+      if(show_banner_home=="true"){
+        show_b_home=true;
+      }
+
+      if(show_banner_genre=="true"){
+        show_b_genre=true;
+      }
+      if(show_banner_videos=="true"){
+        show_b_videos=true;
+      }
+      if(show_banner_favorites=="true"){
+        show_b_favorites=true;
+      }
+      if(show_inter_download=="true"){
+        show_i_download=true;
+      }
+      if(show_inter_nav=="true"){
+        show_i_nav=true;
+      }
+
+    });
+
+
 
     firestore.collection("Ads").doc(Id).update({
 
-      "show_banner_home":show_banner_home,
-      "show_banner_genre":show_banner_genre,
-      "show_banner_videos":show_banner_videos,
-      "show_banner_favorites":show_banner_favorites,
-      "show_inter_download":show_inter_download,
-      "show_inter_nav":show_inter_nav
+      "show_banner_home":show_b_home,
+      "show_banner_genre":show_b_genre,
+      "show_banner_videos":show_b_videos,
+      "show_banner_favorites":show_b_favorites,
+      "show_inter_download":show_i_download,
+      "show_inter_nav":show_i_nav
 
     }).then((value){
       _getAds();
