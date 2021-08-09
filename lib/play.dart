@@ -45,6 +45,7 @@ class _PlayVideoState extends State<PlayVideo> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0x204665).withOpacity(1.0),
           leading: IconButton(
             onPressed: (){
               Navigator.pop(context);

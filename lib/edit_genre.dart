@@ -91,6 +91,7 @@ class _EditGenreState extends State<EditGenre> {
         home: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
+            backgroundColor: Color(0x204665).withOpacity(1.0),
             centerTitle: false,
             leading: IconButton(
               onPressed: (){

@@ -125,6 +125,7 @@ class _AdsSettingsState extends State<AdsSettings> {
       title: "Ads Settings",
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0x204665).withOpacity(1.0),
             centerTitle: false,
             leading: IconButton(
               onPressed: (){

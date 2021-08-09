@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,7 @@ void main(){
   Firebase.initializeApp();
   runApp(
     MaterialApp(
+      title: "Welcome S V C",
       home: App(),
     )
   );
@@ -30,14 +32,18 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
 
+  bool _isLogin=false;
+
   _checkSignin(){
     FirebaseAuth.instance
         .authStateChanges()
         .listen((User? user) {
       if (user == null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> Auth()));
+        setState(() {
+          _isLogin=false;
+        });
       } else {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+        _isLogin=true;
       }
     });
   }
@@ -53,12 +59,72 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "S V C",
-      home: Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+    return FutureBuilder(
+      future: Init.instance.initialize(),
+      builder: (context, AsyncSnapshot snapshot) {
+        // Show splash screen while waiting for app resources to load:
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return MaterialApp(home: Splash());
+        } else {
+          // Loading is done, return the app:
+          if(_isLogin){
+            return MaterialApp(home: Home());
+          }else{
+            return MaterialApp(home: Auth(),);
+
+          }
+        }
+      },
+    );
+  }
+}
+
+
+class Init {
+  Init._();
+  static final instance = Init._();
+
+  Future initialize() async {
+    await Future.delayed(Duration(seconds: 3));
+  }
+}
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0x204665).withOpacity(1.0),
+      body: Center(
+          child: Stack(
+            children: [
+              Center(
+                child: DefaultTextStyle(
+                    style: TextStyle(
+                        color: Colors.amber[500],
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold
+                    ),
+                    child: AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText('S V C'),
+                      ],
+                      isRepeatingAnimation: true,
+
+                    )
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: 50,
+                  margin: EdgeInsets.only(bottom: 50, left: 150, right: 150),
+                  child: LinearProgressIndicator(
+                    color: Colors.amber[500],
+                    backgroundColor: Colors.amber[900],
+                  ),
+                ),
+              )
+            ],
+          )
       ),
     );
   }
@@ -298,10 +364,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Color(0x204665).withOpacity(1.0),
+      ),
       debugShowCheckedModeBanner: false,
       title: _title,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0x204665).withOpacity(1.0),
           centerTitle: false,
           title: Text(_title),
         ),
