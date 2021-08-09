@@ -17,28 +17,22 @@ class _AdsSettingsState extends State<AdsSettings> {
 
   FirebaseFirestore firestore=FirebaseFirestore.instance;
 
-  String inter_id="";
-  String banner_id="";
 
-  String show_inter="Show Inter";
-  String show_banner="Show Banner";
+  String show_banner_home="Show Banner Home";
+  String show_banner_genre="Show Banner Genre";
+  String show_banner_videos="Show Banner Videos";
+  String show_banner_favorites="Show Banner Favorites";
+  String show_inter_download="Show Inter Download";
+  String show_inter_nav="Show Inter Nav";
 
-  List<String> _banners=["Show Banner", "true", "false"];
-  List<String> _inters=["Show Inter", "true", "false"];
+  List<String> _banners_home=["Show Banner Home", "true", "false"];
+  List<String> _banners_genre=["Show Banner Genre", "true", "false"];
+  List<String> _banners_videos=["Show Banner Videos", "true", "false"];
+  List<String> _banners_favorites=["Show Banner Favorites", "true", "false"];
+  List<String> _inters_download=["Show Inter Download", "true", "false"];
+  List<String> _inters_nav=["Show Inter Nav", "true", "false"];
 
 
-  void _getAds()async{
-    var r=await firestore.collection("Ads").get();
-    var d=r.docs.first.data();
-    Timer(Duration(seconds: 1), (){
-      setState(() {
-        inter_id=d['inter_id'];
-        interIDController.text=d['inter_id'];
-        banner_id=d['banner_id'];
-        bannerIdController.text=d['banner_id'];
-      });
-    });
-  }
 
 
   final _formKey = GlobalKey<FormState>();
@@ -49,48 +43,47 @@ class _AdsSettingsState extends State<AdsSettings> {
     var r=await firestore.collection("Ads").get();
     var Id=r.docs.first.id;
 
-    bool s_inter=false;
-    bool s_banner=false;
-    if(show_inter=="true"){
-      setState(() {
-        s_inter=true;
-      });
-    }else{
-      setState(() {
-        s_inter=false;
-      });
-    }
-    if(show_banner=="true"){
-      setState(() {
-        s_banner=true;
-      });
-    }else{
-      setState(() {
-        s_banner=false;
-      });
-    }
 
     firestore.collection("Ads").doc(Id).update({
-      'banner_id': banner_id,
-      'inter_id': inter_id,
-      'show_inter': s_inter,
-      'show_banner':s_banner,
-    }).then((value){
 
-      setState(() {
-        show_banner="Show Banner";
-        show_inter="Show Inter";
-      });
+      "show_banner_home":show_banner_home,
+      "show_banner_genre":show_banner_genre,
+      "show_banner_videos":show_banner_videos,
+      "show_banner_favorites":show_banner_favorites,
+      "show_inter_download":show_inter_download,
+      "show_inter_nav":show_inter_nav
+
+    }).then((value){
+      _getAds();
     });
 
+  }
+
+  _getAds(){
+    firestore.collection("Ads").get().then((v){
+      var d=v.docs.first.data();
+
+        setState(() {
+          show_banner_home= d['show_banner_home'] ? "true" : "false";
+          show_banner_genre= d['show_banner_genre'] ? "true" : "false";
+          show_banner_videos= d['show_banner_videos'] ? "true" : "false";
+          show_banner_favorites= d['show_banner_favorites'] ? "true" : "false";
+          show_inter_download= d['show_inter_download'] ? "true" : "false";
+          show_inter_nav= d['show_inter_nav'] ? "true" : "false";
+
+        });
+
+    });
   }
 
 
 
   @override
   void initState() {
-    _getAds();
     // TODO: implement initState
+
+    _getAds();
+
     super.initState();
   }
 
@@ -136,18 +129,18 @@ class _AdsSettingsState extends State<AdsSettings> {
                                 return ListTile(
                                   title: Column(
                                     children: [
-                                      Text("Banner ID : ${d[i]['banner_id']}"),
+                                      Text("Show Banner Home : ${d[i]['show_banner_home']}"),
                                       SizedBox(height: 40,),
-                                      Text("Banner Test ID : ${d[i]['banner_test_id']}"),
+                                      Text("Show Banner Genre : ${d[i]['show_banner_genre']}"),
 
                                       SizedBox(height: 40,),
-                                      Text("Show Banner : ${d[i]['show_banner']}"),
-                                      SizedBox(height: 60,),
-                                      Text("Inter ID : ${d[i]['inter_id']}"),
+                                      Text("Show Banner Videos : ${d[i]['show_banner_videos']}"),
                                       SizedBox(height: 40,),
-                                      Text("Inter Test ID : ${d[i]['inter_test_id']}"),
+                                      Text("Show Banner Favorites : ${d[i]['show_banner_favorites']}"),
                                       SizedBox(height: 40,),
-                                      Text("Show Inter : ${d[i]['show_inter']}"),
+                                      Text("Show Inter Download : ${d[i]['show_inter_download']}"),
+                                      SizedBox(height: 40,),
+                                      Text("Show Inter Nav : ${d[i]['show_inter_nav']}"),
                                     ],
                                   ),
                                 );
@@ -173,43 +166,19 @@ class _AdsSettingsState extends State<AdsSettings> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          Container(
-                            child: Text("Banner ID"),
-                          ),
-                          Container(
-                            child: TextFormField(
-                              controller: bannerIdController,
-                              onChanged: (v){
-                                setState(() {
-                                  banner_id=v;
-                                });
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Banner ID"
-                              ),
-                              validator: (v){
 
-                                if(v==null || v.isEmpty){
-                                  return "Banner ID is input required.";
-                                }
-                                return null;
-
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 20,),
                           Container(
                               width: 1000,
                               child: DropdownButtonFormField<String>(
                                 validator: (v){
-                                  if(v==null || v.isEmpty || v=="Show Banner"){
-                                    return "Show Banner field is selected required.";
+                                  if(v==null || v.isEmpty){
+                                    return "Show Banner Home field is selected required.";
                                   }
                                   return null;
 
                                 },
-                                value: show_banner,
-                                icon: const Icon(Icons.arrow_downward),
+                                value: show_banner_home,
+                                icon: Text("Show Banner Home"),
                                 iconSize: 24,
                                 elevation: 16,
                                 style: const TextStyle(
@@ -217,10 +186,10 @@ class _AdsSettingsState extends State<AdsSettings> {
                                 ),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    show_banner = newValue!;
+                                    show_banner_home = newValue!;
                                   });
                                 },
-                                items: _banners.map((g) {
+                                items: _banners_home.map((g) {
                                   return DropdownMenuItem(
                                     child: new Text(g),
                                     value: g,
@@ -228,45 +197,20 @@ class _AdsSettingsState extends State<AdsSettings> {
                                 }).toList(),
                               )
                           ),
-                          SizedBox(height:50,),
-                          Container(
-                            child: Text("Inter ID"),
-                          ),
-                          Container(
-                            child: TextFormField(
-                              controller: interIDController,
-                              onChanged: (v){
-                                setState(() {
-                                  inter_id=v;
-                                });
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Inter ID"
-                              ),
-                              validator: (v){
-
-                                if(v==null || v.isEmpty){
-                                  return "Inter ID is input required.";
-                                }
-                                return null;
-
-                              },
-                            ),
-                          ),
                           SizedBox(height:20,),
 
                           Container(
                               width: 1000,
                               child: DropdownButtonFormField<String>(
                                 validator: (v){
-                                  if(v==null || v.isEmpty || v=="Show Inter"){
-                                    return "Show Inter field is selected required.";
+                                  if(v==null || v.isEmpty){
+                                    return "Show banner genre field is selected required.";
                                   }
                                   return null;
 
                                 },
-                                value: show_inter,
-                                icon: const Icon(Icons.arrow_downward),
+                                value: show_banner_genre,
+                                icon: Text("Show Banner Genre"),
                                 iconSize: 24,
                                 elevation: 16,
                                 style: const TextStyle(
@@ -274,10 +218,134 @@ class _AdsSettingsState extends State<AdsSettings> {
                                 ),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    show_inter = newValue!;
+                                    show_banner_genre = newValue!;
                                   });
                                 },
-                                items: _inters.map((g) {
+                                items: _banners_genre.map((g) {
+                                  return DropdownMenuItem(
+                                    child: new Text(g),
+                                    value: g,
+                                  );
+                                }).toList(),
+                              )
+                          ),
+                          SizedBox(height:20,),
+                          Container(
+                              width: 1000,
+                              child: DropdownButtonFormField<String>(
+                                validator: (v){
+                                  if(v==null || v.isEmpty){
+                                    return "Show banner videos field is selected required.";
+                                  }
+                                  return null;
+
+                                },
+                                value: show_banner_videos,
+                                icon: Text("Show Banner Videos"),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: const TextStyle(
+                                    color: Colors.black
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    show_banner_videos = newValue!;
+                                  });
+                                },
+                                items: _banners_videos.map((g) {
+                                  return DropdownMenuItem(
+                                    child: new Text(g),
+                                    value: g,
+                                  );
+                                }).toList(),
+                              )
+                          ),
+                          SizedBox(height:20,),
+                          Container(
+                              width: 1000,
+                              child: DropdownButtonFormField<String>(
+                                validator: (v){
+                                  if(v==null || v.isEmpty){
+                                    return "Show banner favorites field is selected required.";
+                                  }
+                                  return null;
+
+                                },
+                                value: show_banner_favorites,
+                                icon: Text("Show Banner Favorites"),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: const TextStyle(
+                                    color: Colors.black
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    show_banner_favorites = newValue!;
+                                  });
+                                },
+                                items: _banners_favorites.map((g) {
+                                  return DropdownMenuItem(
+                                    child: new Text(g),
+                                    value: g,
+                                  );
+                                }).toList(),
+                              )
+                          ),
+                          SizedBox(height:20,),
+                          Container(
+                              width: 1000,
+                              child: DropdownButtonFormField<String>(
+                                validator: (v){
+                                  if(v==null || v.isEmpty){
+                                    return "Show inter download field is selected required.";
+                                  }
+                                  return null;
+
+                                },
+                                value: show_inter_download,
+                                icon: Text("Show Inter Download"),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: const TextStyle(
+                                    color: Colors.black
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    show_inter_download = newValue!;
+                                  });
+                                },
+                                items: _inters_download.map((g) {
+                                  return DropdownMenuItem(
+                                    child: new Text(g),
+                                    value: g,
+                                  );
+                                }).toList(),
+                              )
+                          ),
+                          SizedBox(height:20,),
+                          Container(
+                              width: 1000,
+                              child: DropdownButtonFormField<String>(
+                                validator: (v){
+                                  if(v==null || v.isEmpty){
+                                    return "Show inter nav field is selected required.";
+                                  }
+                                  return null;
+
+                                },
+                                value: show_inter_nav,
+                                icon: Text("Show Inter Nav"),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: const TextStyle(
+                                    color: Colors.black
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    show_inter_nav = newValue!;
+                                  });
+                                },
+                                items: _inters_nav.map((g) {
                                   return DropdownMenuItem(
                                     child: new Text(g),
                                     value: g,
