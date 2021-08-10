@@ -31,35 +31,12 @@ class _GenreState extends State<Genre> {
   }
   FirebaseFirestore firestore=FirebaseFirestore.instance;
 
-  void confirmDel(id, title){
-    var alert=AlertDialog(
-      title: Text("Confirm"),
-      content: Text("This genre ${title} will delete from database, are you sure ?"),
-      actions: [
-        TextButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: Text("No")
-        ),
-        TextButton(
-            onPressed: (){
-              firestore.collection("Genre").doc(id).delete().then((value){
-                  _finishSnackBar();
-                  Navigator.pop(context);
-                  setState(() {});
+  void confirmDel(id){
+    firestore.collection("Genre").doc(id).delete().then((value){
+      _finishSnackBar();
+      setState(() {});
 
-                });
-
-            },
-            child: Text("Yes")
-        )
-      ],
-    );
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => alert
-    );
+    });
   }
 
   @override
@@ -121,7 +98,7 @@ class _GenreState extends State<Genre> {
                                       ),
                                       IconButton(
                                           onPressed: (){
-                                            confirmDel(d[i].id, d[i]['title']);
+                                            confirmDel(d[i].id);
                                           },
                                           icon: Icon(Icons.remove_circle_outlined, color: Colors.red,)
                                       )

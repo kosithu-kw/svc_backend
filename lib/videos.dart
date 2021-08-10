@@ -33,37 +33,13 @@ class _VideosState extends State<Videos> {
   }
   FirebaseFirestore firestore=FirebaseFirestore.instance;
 
-  void confirmDel(id, title){
-    var alert=AlertDialog(
-      title: Text("Confirm"),
-      content: Text("This video ${title} will delete from database, are you sure ?"),
-      actions: [
-        TextButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: Text("No")
-        ),
-        TextButton(
-            onPressed: (){
-              firestore.collection("Videos").doc(id).delete().then((value){
-                _finishSnackBar();
-                Navigator.pop(context);
-                setState(() {});
+  _confirmDel(id){
+    firestore.collection("Videos").doc(id).delete().then((value){
+      _finishSnackBar();
+      setState(() {});
 
-              });
-
-            },
-            child: Text("Yes")
-        )
-      ],
-    );
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => alert
-    );
+    });
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -134,7 +110,7 @@ class _VideosState extends State<Videos> {
                                       ),
                                       IconButton(
                                           onPressed: (){
-                                            confirmDel(d[i].id, d[i]['title']);
+                                            _confirmDel(d[i].id);
                                           },
                                           icon: Icon(Icons.remove_circle_outlined, color: Colors.red,)
                                       )
